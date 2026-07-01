@@ -6,9 +6,9 @@ Este proyecto fue desarrollado como caso de estudio para demostrar el potencial 
 
 ## **📁 Estructura del Repositorio**
 
-* /workflows: Contiene el archivo .json de exportación de n8n para importar el flujo de trabajo completo.  
-* /docs: Contiene la Documentación Técnica del Sistema (prode\_mundial\_doc.md), detallando la arquitectura y lógica de negocio.  
-* /presentation: Espacio reservado para la presentación (PPT/Keynote) de la Masterclass.
+* ./workflow.json : Contiene el archivo .json de exportación de n8n para importar el flujo de trabajo completo.  
+* ./docu_tecnica: Contiene la Documentación Técnica del Sistema (prode\_mundial\_doc.md), detallando la arquitectura y lógica de negocio.  
+* ./presentation: Espacio reservado para la presentación (PPT/Keynote) de la Masterclass.
 
 ## **🛠️ Tecnologías Aplicadas**
 
@@ -39,4 +39,4 @@ Este repositorio sirve como material de apoyo para la **Masterclass de Marketing
 
 Este proyecto es parte del ecosistema de formación de **Henry**. Si eres estudiante y deseas replicar este sistema, asegúrate de importar el .json en una instancia de n8n con acceso a las credenciales de la API-Sports y Airtable.
 
-*Desarrollado por: \[Tu Nombre/Firma\]*
+*Desarrollado por: Mariano Gobea Alcoba
