@@ -1,0 +1,1441 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "id": "ec4e91e4-c0b1-4ab8-b7f7-eda3f84b5435",
+      "name": "Cron 19hs - Enviar Fixture",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://v3.football.api-sports.io/fixtures",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $now.plus({ days: 1 }).toFormat(\"yyyy-MM-dd\") }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apisports-key",
+              "value": "={{ $vars.X_APISPORTS_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e23b4f64-4709-46d8-8ea6-103f1d454b93",
+      "name": "Buscar Partidos Mañana",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nif (!allItems[0].json.response) return [];\nconst fixtures = allItems[0].json.response;\nconst worldCupFixtures = fixtures.filter(match => match.league.id === 1);\n\nreturn worldCupFixtures.map(match => {\n  const homeTeam = match.teams.home.name;\n  const awayTeam = match.teams.away.name;\n  const partidoId = `${homeTeam.toLowerCase().replace(/\\s+/g, '-')}-${awayTeam.toLowerCase().replace(/\\s+/g, '-')}`;\n  return {\n    json: {\n      partido_id: partidoId,\n      fixture_id: match.fixture.id,\n      fixture_date: match.fixture.date,\n      equipo_1: homeTeam,\n      equipo_2: awayTeam,\n      goles_equipo_1: match.goals.home,\n      goles_equipo_2: match.goals.away,\n      ganador: match.teams.home.winner ? homeTeam : (match.teams.away.winner ? awayTeam : null),\n      timestamp: match.fixture.timestamp,\n      termino: ['FT', 'PEN'].includes(match.fixture.status.short)\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        800
+      ],
+      "id": "7274c9ca-e682-4e9c-9c90-b08af549ef86",
+      "name": "Parsear Mañana"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQPEtYs5XGdEIpA",
+          "mode": "list",
+          "cachedResultName": "info_api_table",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblQPEtYs5XGdEIpA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "termino": "={{ $json.termino }}",
+            "goles_equipo_1": "={{ $json.goles_equipo_1 }}",
+            "fixture_id": "={{ $json.fixture_id }}",
+            "partido_id": "={{ $json.partido_id }}",
+            "fixture_date": "={{ $json.fixture_date }}",
+            "equipo_1": "={{ $json.equipo_1 }}",
+            "equipo_2": "={{ $json.equipo_2 }}",
+            "goles_equipo_2": "={{ $json.goles_equipo_2 }}",
+            "ganador": "={{ $json.ganador }}",
+            "timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [
+            "fixture_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "partido_id",
+              "displayName": "partido_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fixture_id",
+              "displayName": "fixture_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fixture_date",
+              "displayName": "fixture_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "equipo_1",
+              "displayName": "equipo_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "equipo_2",
+              "displayName": "equipo_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_1",
+              "displayName": "goles_equipo_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_2",
+              "displayName": "goles_equipo_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ganador",
+              "displayName": "ganador",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "termino",
+              "displayName": "termino",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        800
+      ],
+      "id": "daa446d2-1d6a-406b-bcae-5c96f51e552f",
+      "name": "Upsert Fixture Mañana",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldGmMatdzynjVEa",
+          "mode": "list",
+          "cachedResultName": "jugadores_prode",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tbldGmMatdzynjVEa"
+        },
+        "options": {
+          "view": {
+            "__rl": true,
+            "value": "viwaZFBGP8l6nyMJ2",
+            "mode": "list",
+            "cachedResultName": "Grid view",
+            "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tbldGmMatdzynjVEa/viwaZFBGP8l6nyMJ2"
+          }
+        }
+      },
+      "id": "dc9f244a-4f1f-4923-8fbb-518b736e58a0",
+      "name": "Obtener Jugadores",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        800
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.fields.telegram_chat_id }}",
+        "text": "=⚽ *¡PRODE MUNDIAL - Predicciones de Mañana!* ⚽\n\nHola {{ $json.fields.nombre }}, estos son los partidos de mañana. Ingresá al link para dejar tus predicciones antes de que comiencen:\n\n🔗 *Link del Formulario:* https://mgobeaalcoba.app.n8n.cloud/webhook/prode-mundial?player={{ $json.fields.telegram_chat_id }}",
+        "additionalFields": {}
+      },
+      "id": "b16a02e3-8be6-4e69-9323-516d75be7ec0",
+      "name": "Notificar por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        800
+      ],
+      "webhookId": "70d6a52f-cdca-4e29-9ddb-c94500694dcd",
+      "credentials": {
+        "telegramApi": {
+          "id": "1FwgncoQuq1GPBt2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23
+            }
+          ]
+        }
+      },
+      "id": "b04d0417-0892-4ab7-a32e-e71f8f781d71",
+      "name": "Cron 23hs - Calcular Puntos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nif (!allItems[0].json.response) return [];\nconst fixtures = allItems[0].json.response;\n\n// Filtramos por la liga correcta (World Cup = id 1)\nconst worldCupFixtures = fixtures.filter(match => match.league.id === 1);\n\nreturn worldCupFixtures.map(match => {\n  const homeTeam = match.teams.home.name;\n  const awayTeam = match.teams.away.name;\n  \n  // Generamos el partido_id dinámico idéntico al del fixture de las 19 hs\n  const partidoId = `${homeTeam.toLowerCase().replace(/\\s+/g, '-')}-${awayTeam.toLowerCase().replace(/\\s+/g, '-')}`;\n\n  // Calculamos el ganador real de forma idéntica\n  const ganadorReal = match.teams.home.winner ? homeTeam : (match.teams.away.winner ? awayTeam : 'Ninguno (Empate)');\n\n  // Extraemos solo la fecha YYYY-MM-DD de la cadena completa ISO\n  const fixtureDate = match.fixture.date ? match.fixture.date.split('T')[0] : null;\n\n  return {\n    json: {\n      partido_id: partidoId,\n      fixture_id: match.fixture.id,\n      fixture_date: fixtureDate,\n      equipo_1: homeTeam,\n      equipo_2: awayTeam,\n      goles_equipo_1: match.goals.home,\n      goles_equipo_2: match.goals.away,\n      ganador: ganadorReal,\n      timestamp: match.fixture.timestamp,\n      termino: ['FT', 'PEN'].includes(match.fixture.status.short)\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        1136
+      ],
+      "id": "4e05df19-b0ef-4654-aa12-e26aa25a3220",
+      "name": "Parsear Resultados"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "predicciones_jugadores",
+          "mode": "list"
+        },
+        "filterByFormula": "={fixture_id} = '{{ $json.fields.fixture_id }}'",
+        "options": {}
+      },
+      "id": "5411ecfa-c9e4-4700-9d7e-6fba3e77324a",
+      "name": "Obtener Predicciones",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        1136
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGaI8MXn6GBLXE2",
+          "mode": "list",
+          "cachedResultName": "puntaje_jugadores",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblGaI8MXn6GBLXE2"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "id_jugador": "={{ $json.id_jugador }}",
+            "puntos_del_dia": "={{ $json.puntos_del_dia }}"
+          },
+          "matchingColumns": [
+            "id_jugador",
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "id_jugador",
+              "displayName": "id_jugador",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "puntos_del_dia",
+              "displayName": "puntos_del_dia",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "7090c8fa-2c90-461c-a7bc-14da4d202800",
+      "name": "Guardar Historial Diario",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        1136
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Cambiamos la referencia al nodo de Airtable que ya guardó los resultados reales\nconst results = $('Upsert Fixture Ayer').all();\nconst predictions = $('Obtener Predicciones').all();\n\nconst playerPoints = {};\n\n// Tomamos la fecha del día en que se procesan los partidos finalizados\nconst fechaProceso = new Date().toISOString().split('T')[0];\n\npredictions.forEach(pred => {\n  const p = pred.json.fields; \n  \n  if (!p) return; // Salvaguarda por si viene una fila vacía\n\n  // Buscamos el partido real dentro de los campos de 'Upsert Fixture Ayer'\n  const actualMatch = results.find(r => Number(r.json.fields.fixture_id) === Number(p.fixture_id));\n  \n  if (actualMatch && actualMatch.json.fields.termino) {\n    const matchReal = actualMatch.json.fields;\n    let pts = 0;\n\n    // 1. Verificamos si coincide el ganador real o el empate (Acierto Base)\n    if (p.prediccion_ganador === matchReal.ganador) {\n      \n      // 2. Verificamos si TAMBIÉN acertó los goles exactos de ambos equipos\n      const coincidenGoles1 = Number(p.goles_equipo_1) === Number(matchReal.goles_equipo_1);\n      const coincidenGoles2 = Number(p.goles_equipo_2) === Number(matchReal.goles_equipo_2);\n\n      if (coincidenGoles1 && coincidenGoles2) {\n        pts = 3; // Marcador perfecto\n      } else {\n        pts = 1; // Solo ganador/empate\n      }\n    }\n\n    // Acumulamos los puntos agrupando por el ID de jugador (telegram_chat_id)\n    if (!playerPoints[p.id_jugador]) {\n      playerPoints[p.id_jugador] = 0;\n    }\n    playerPoints[p.id_jugador] += pts;\n  }\n});\n\n// Mapeamos el consolidado final al formato que requiere la tabla puntaje_jugadores\nreturn Object.keys(playerPoints).map(id => ({\n  json: {\n    id_jugador: id,\n    puntos_del_dia: playerPoints[id],\n    fecha: fechaProceso\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        1136
+      ],
+      "id": "21bc75a0-fef0-4aa3-8b4d-5e8ea6c42aab",
+      "name": "Calcular Puntajes1"
+    },
+    {
+      "parameters": {
+        "url": "https://v3.football.api-sports.io/fixtures",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $now.minus({ days: 1 }).toFormat(\"yyyy-MM-dd\") }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apisports-key",
+              "value": "={{ $vars.X_APISPORTS_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c96a9674-1499-4b1d-86f9-bea789ceac1d",
+      "name": "Buscar Resultados Ayer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQPEtYs5XGdEIpA",
+          "mode": "list",
+          "cachedResultName": "info_api_table",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblQPEtYs5XGdEIpA"
+        },
+        "filterByFormula": "=AND(IS_SAME({fixture_date}, '{{ $now.plus({ days: 1 }).toFormat(\"yyyy-MM-dd\") }}', 'day'), {termino} = 0)",
+        "options": {}
+      },
+      "id": "a8c09b58-5f1e-4d4d-896b-322a753f5925",
+      "name": "Buscar Partidos Activos",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        1456
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const matches = $('Buscar Partidos Activos').all();\nconst formInput = $('Webhook').first(); \nconst queryParams = formInput.json.query || {};\n\n// Capturamos el ID del jugador desde la URL (tu telegram_chat_id)\nconst playerId = queryParams.player || 'Invitado';\n\n// Intentamos recuperar de forma segura el nombre real desde el nuevo nodo de Airtable\nlet playerName = 'Invitado';\ntry {\n  const jugadorRecord = $('Buscar Jugador').first();\n  if (jugadorRecord && jugadorRecord.json && jugadorRecord.json.fields) {\n    playerName = jugadorRecord.json.fields.nombre;\n  }\n} catch (e) {\n  // Si no encuentra ejecuciones previas del nodo, se mantiene seguro como 'Invitado'\n}\n\n// ==========================================\n// CONSTRUIR LA INTERFAZ WEB (GET)\n// ==========================================\nlet matchFieldsHTML = '';\nmatches.forEach(m => {\n  const p = m.json.fields; \n  \n  if (p) {\n    matchFieldsHTML += `\n      <div class=\"match-card\">\n        <label class=\"match-label\">${p.equipo_1} vs ${p.equipo_2}</label>\n        \n        <div style=\"margin-bottom: 12px;\">\n          <select name=\"match_${p.fixture_id}\" required class=\"match-select\">\n            <option value=\"\" disabled selected>¿Quién gana?</option>\n            <option value=\"${p.equipo_1}\">Gana ${p.equipo_1}</option>\n            <option value=\"${p.equipo_2}\">Gana ${p.equipo_2}</option>\n            <option value=\"Ninguno (Empate)\">Empate</option>\n          </select>\n        </div>\n\n        <div class=\"goals-container\" style=\"display: flex; gap: 10px; align-items: center; justify-content: space-between;\">\n          <div style=\"flex: 1; display: flex; align-items: center; gap: 5px;\">\n            <span style=\"font-size: 0.85em; color: #666; min-width: 50px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;\">${p.equipo_1}:</span>\n            <input type=\"number\" name=\"match_${p.fixture_id}_goles1\" min=\"0\" required placeholder=\"0\" class=\"goals-input\" style=\"width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1;\">\n          </div>\n          <div style=\"flex: 1; display: flex; align-items: center; gap: 5px;\">\n            <span style=\"font-size: 0.85em; color: #666; min-width: 50px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;\">${p.equipo_2}:</span>\n            <input type=\"number\" name=\"match_${p.fixture_id}_goles2\" min=\"0\" required placeholder=\"0\" class=\"goals-input\" style=\"width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1;\">\n          </div>\n        </div>\n      </div>\n    `;\n  }\n});\n\nconst htmlForm = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Prode Mundial 🏆</title>\n  <style>\n    body { font-family: sans-serif; background: #f4f6f9; color: #333; padding: 20px; }\n    .container { max-width: 500px; background: white; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }\n    \n    /* Estilos de la Cabecera de Logos */\n    .brand-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #edf2f7; }\n    .logo-henry { height: 45px; max-width: 150px; object-fit: contain; border-radius: 4px; }\n    .logo-cup { height: 50px; width: 50px; object-fit: cover; border-radius: 50%; border: 2px solid #3483FA; }\n    \n    h2 { text-align: center; color: #1a365d; margin-top: 10px; margin-bottom: 5px; }\n    .match-card { margin-bottom: 20px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fafafa; }\n    .match-label { font-weight: bold; display: block; margin-bottom: 12px; color: #2d3748; font-size: 1.05em; border-bottom: 1px solid #edf2f7; padding-bottom: 8px; }\n    .match-select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; color: #333; }\n    .btn-submit { width: 100%; background: #3483FA; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }\n    .btn-submit:hover { background: #2b6cb0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"brand-header\">\n      <img src=\"https://assets.soyhenry.com/logoOG.png\" alt=\"Henry\" class=\"logo-henry\">\n      <img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe37IZj18o3Bqd81TZJgPsji7zwspaulCak3b7-xA2gzHpH2JtJkkdfKcq&s=10\" alt=\"Copa del Mundo\" class=\"logo-cup\">\n    </div>\n\n    <h2>Prode Mundial 🏆</h2>\n    <p style=\"text-align:center; color: #2d3748; font-size: 1.1em; font-weight: 500; margin-bottom: 25px;\">\n      ¡Hola, <span style=\"color: #3483FA; font-weight: bold;\">${playerName.trim()}</span>! Dejá tus predicciones:\n    </p>\n    \n    <form method=\"POST\">\n      <input type=\"hidden\" name=\"player_id\" value=\"${playerId}\">\n      ${matchFieldsHTML}\n      <button type=\"submit\" class=\"btn-submit\">Enviar Mis Predicciones</button>\n    </form>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{ json: { htmlContent: htmlForm } }];"
+      },
+      "id": "0f6d8692-aa3e-472e-8387-6534f8c4f78e",
+      "name": "HTML Builder & Parser",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        1456
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.htmlContent }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "id": "be6268f6-2276-4aeb-bf77-4f09bfc20397",
+      "name": "Mostrar Formulario HTML",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        1456
+      ]
+    },
+    {
+      "parameters": {
+        "path": "prode-mundial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        1456
+      ],
+      "id": "193e23f9-b39d-4668-a0cd-fc3b405ff0ae",
+      "name": "Webhook",
+      "webhookId": "ec5363a9-623a-4ebf-a3ac-65332989b174"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldGmMatdzynjVEa",
+          "mode": "list",
+          "cachedResultName": "jugadores_prode",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tbldGmMatdzynjVEa"
+        },
+        "filterByFormula": "={telegram_chat_id} = '{{ $('Webhook').first().json.query.player }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        1456
+      ],
+      "id": "4a7a01c1-cbc4-44ad-9934-23a12a14a9a4",
+      "name": "Buscar Jugador",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prode-mundial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        1680
+      ],
+      "id": "634bcd9c-6677-417f-8a81-a8afddb4aa89",
+      "name": "Webhook - Recibir POST",
+      "webhookId": "prode-mundial-post"
+    },
+    {
+      "parameters": {
+        "jsCode": "const formInput = $('Webhook - Recibir POST').first();\nconst queryParams = formInput.json.query || {};\nconst body = formInput.json.body || {};\nconst predictionsMap = {};\n\n// Capturamos el ID único (telegram_chat_id) que viaja oculto o en la URL\nconst playerId = body.player_id || queryParams.player || 'Invitado';\n\n// Iteramos las claves enviadas en el formulario x-www-form-urlencoded\nObject.keys(body).forEach(key => {\n  if (key.startsWith('match_')) {\n    const parts = key.split('_'); // match_[fixture_id], match_[fixture_id]_goles1, etc.\n    const fixtureId = parts[1];\n    \n    if (!predictionsMap[fixtureId]) {\n      predictionsMap[fixtureId] = {\n        id_jugador: playerId,\n        fixture_id: Number(fixtureId)\n      };\n    }\n\n    if (parts.length === 2) {\n      // Nombre del ganador elegido en el select\n      predictionsMap[fixtureId].prediccion_ganador = body[key];\n    } else if (parts[2] === 'goles1') {\n      predictionsMap[fixtureId].goles_equipo_1 = Number(body[key]);\n    } else if (parts[2] === 'goles2') {\n      predictionsMap[fixtureId].goles_equipo_2 = Number(body[key]);\n    }\n  }\n});\n\n// Retornamos la data expandida en filas individuales para que Airtable procese cada registro\nreturn Object.values(predictionsMap).map(pred => ({ json: pred }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        1680
+      ],
+      "id": "447c2047-b67e-4e41-9147-73f63e6c4e43",
+      "name": "Parsear Formulario POST"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>¡Éxito! 🏆</title>\n  <style>\n    body { font-family: sans-serif; background: #f4f6f9; color: #333; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }\n    .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }\n    h1 { color: #00A650; margin-bottom: 15px; }\n    p { color: #4a5568; line-height: 1.5; }\n  </style>\n</head>\n<body>\n  <div class=\"card\">\n    <h1>¡Predicciones Guardadas! 🚀</h1>\n    <p>Tus pronósticos para los partidos de mañana ya se registraron correctamente. ¡Muchos éxitos en la fecha!</p>\n  </div>\n</body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        864,
+        1680
+      ],
+      "id": "9cb5aa6e-dbd2-4167-9804-75dc2c7933ea",
+      "name": "Mostrar Pantalla Éxito"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblr8W29mt843KBR5",
+          "mode": "list",
+          "cachedResultName": "predicciones_jugadores"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fixture_id": "={{ $json.fixture_id }}",
+            "id_jugador": "={{ $json.id_jugador }}",
+            "prediccion_ganador": "={{ $json.prediccion_ganador }}",
+            "goles_equipo_1": "={{ $json.goles_equipo_1 }}",
+            "goles_equipo_2": "={{ $json.goles_equipo_2 }}"
+          },
+          "matchingColumns": [
+            "id_jugador",
+            "fixture_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "id_jugador",
+              "displayName": "id_jugador",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fixture_id",
+              "displayName": "fixture_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "partido_id",
+              "displayName": "partido_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "prediccion_ganador",
+              "displayName": "prediccion_ganador",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_1",
+              "displayName": "goles_equipo_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_2",
+              "displayName": "goles_equipo_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        1680
+      ],
+      "id": "39e615dd-1c58-45f6-8423-82fb81ae9816",
+      "name": "Upsert Predicciones",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQPEtYs5XGdEIpA",
+          "mode": "list",
+          "cachedResultName": "info_api_table",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblQPEtYs5XGdEIpA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "termino": "={{ $json.termino }}",
+            "fixture_id": "={{ $json.fixture_id }}",
+            "goles_equipo_1": "={{ $json.goles_equipo_1 }}",
+            "goles_equipo_2": "={{ $json.goles_equipo_2 }}",
+            "ganador": "={{ $json.ganador }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "partido_id": "={{ $json.partido_id }}",
+            "fixture_date": "={{ $json.fixture_date }}",
+            "equipo_1": "={{ $json.equipo_1 }}",
+            "equipo_2": "={{ $json.equipo_2 }}"
+          },
+          "matchingColumns": [
+            "fixture_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "partido_id",
+              "displayName": "partido_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fixture_id",
+              "displayName": "fixture_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fixture_date",
+              "displayName": "fixture_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "equipo_1",
+              "displayName": "equipo_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "equipo_2",
+              "displayName": "equipo_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_1",
+              "displayName": "goles_equipo_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "goles_equipo_2",
+              "displayName": "goles_equipo_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ganador",
+              "displayName": "ganador",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "termino",
+              "displayName": "termino",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        1136
+      ],
+      "id": "2bc4c0ab-5962-4188-8598-ae55698bc69c",
+      "name": "Upsert Fixture Ayer",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Los ítems del input directo son los Jugadores\nconst infoJugadores = $input.all();\n\n// 2. Recuperamos de forma cruzada el historial completo desde el nodo de puntajes\nlet itemsPuntajes = [];\ntry {\n  itemsPuntajes = $('Traer Puntajes').all();\n} catch (e) {\n  // Salvaguarda por si falla la herencia en modo de prueba\n}\n\nconst playerPoints = {};\nconst playerHoyPoints = {};\n\n// Tomamos la fecha del día en formato YYYY-MM-DD\nconst fechaProceso = new Date().toISOString().split('T')[0];\n\n// ==========================================\n// PROCESAR Y ACUMULAR PUNTOS HISTÓRICOS\n// ==========================================\nitemsPuntajes.forEach(pred => {\n  const p = pred.json.fields; \n  if (!p) return;\n\n  const id = p.id_jugador ? p.id_jugador.toString() : '';\n  if (!id) return;\n\n  // Inicializamos el acumulador si no existe\n  if (!playerPoints[id]) {\n    playerPoints[id] = 0;\n  }\n  \n  // Sumamos al histórico total\n  playerPoints[id] += Number(p.puntos_del_dia || 0);\n\n  // Si el registro coincide con la fecha de hoy, lo guardamos para el reporte diario\n  if (p.fecha === fechaProceso) {\n    if (!playerHoyPoints[id]) {\n      playerHoyPoints[id] = 0;\n    }\n    playerHoyPoints[id] += Number(p.puntos_del_dia || 0);\n  }\n});\n\n// ==========================================\n// MAPEAR PERFILES Y CREAR EL RANKING FINAL\n// ==========================================\nconst listaRanking = infoJugadores.map(jugador => {\n  const fields = jugador.json.fields;\n  if (!fields) return null;\n  \n  const chatId = fields.telegram_chat_id ? fields.telegram_chat_id.toString() : '';\n  \n  return {\n    nombre: fields.nombre ? fields.nombre.trim() : 'Invitado',\n    pais: fields.pais || 'No especificado',\n    telegram_chat_id: chatId,\n    puntos_totales: playerPoints[chatId] || 0,\n    puntos_ganados_hoy: playerHoyPoints[chatId] || 0\n  };\n}).filter(j => j !== null); // Limpiamos registros nulos por si las dudas\n\n// Ordenamos de mayor a menor según el puntaje histórico acumulado para armar el podio\nlistaRanking.sort((a, b) => b.puntos_totales - a.puntos_totales);\n\n// Mapeamos el output final inyectando el orden/puesto numérico exacto para la IA\nreturn listaRanking.map((jugador, index) => {\n  return {\n    json: {\n      nombre: jugador.nombre,\n      pais: jugador.pais,\n      puntos_ganados_hoy: jugador.puntos_ganados_hoy,\n      puntos_totales_acumulados: jugador.puntos_totales,\n      puesto_ranking: `${index + 1}º`,\n      telegram_chat_id: jugador.telegram_chat_id,\n      fecha: fechaProceso\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        1136
+      ],
+      "id": "a411a996-abac-440a-9875-a4fe20362114",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGaI8MXn6GBLXE2",
+          "mode": "list",
+          "cachedResultName": "puntaje_jugadores",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblGaI8MXn6GBLXE2"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        1136
+      ],
+      "id": "b783b47a-0693-49f0-a636-66d0311ee0b1",
+      "name": "Traer Puntajes",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "applwihYRgheLWWwY",
+          "mode": "list",
+          "cachedResultName": "Prode Mundial",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldGmMatdzynjVEa",
+          "mode": "list",
+          "cachedResultName": "jugadores_prode",
+          "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tbldGmMatdzynjVEa"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1984,
+        1136
+      ],
+      "id": "de2f4bf5-90fa-4fcb-ad50-69848a521d1c",
+      "name": "Traer Jugadores",
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WYLEzPYtkTUfThe5",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aquí tenés la información consolidada de la fecha de hoy para este usuario:\n- Jugador: {{ $json.nombre }}\n- País: {{ $json.pais }}\n- Puesto en el Ranking General: {{ $json.puesto_ranking }}\n- Puntos ganados hoy: {{ $json.puntos_ganados_hoy }}\n- Puntos totales acumulados: {{ $json.puntos_totales_acumulados }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Sos el presentador oficial del Prode Mundial. Tu objetivo es informar a cada jugador cómo quedó en la tabla de posiciones con un tono súper dinámico, futbolero, apasionado y usando modismos locales según su país:\n\n- Si el país es \"Argentina\": Usá modismos rioplatenses (\"che\", \"viste\", \"crack\", \"sos un fenómeno\", \"remarla\", \"andar de racha\"). Tuteo rioplatense obligatorio.\n- Si el país es \"Colombia\": Usá modismos colombianos (\"parce\", \"chévere\", \"berraco\", \"qué nota\", \"ponerse las pilas\").\n- Si el país es cualquier otro: Mantené un tono y formas conversacionales propias de ese país con palabras claves. Si no sabes cuales son entonces usa el neutro. \n\nArmá un mensaje compacto, divertido y personalizado para enviarle por Telegram. Felicitá si subió en el podio o meté un poco de picante sano y folclórico si viene abajo. No uses negritas exageradas y cerrá siempre con un emoji futbolero. Generá únicamente el texto final del mensaje, listo para enviar."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2432,
+        1136
+      ],
+      "id": "ebe02d6c-c612-4c1c-9d5c-7c57dc2d1aae",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        1360
+      ],
+      "id": "a81bf2fd-232b-414b-bfbb-1ee989620b5e",
+      "name": "Qwen 3 Coder",
+      "credentials": {
+        "openRouterApi": {
+          "id": "xZpAyjDIWgQms8rD",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2448,
+        1360
+      ],
+      "id": "5511542c-f684-4877-82d6-1049b6333c5d",
+      "name": "Flash 3.1 Lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OD88yay032b6k7Hu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Code in JavaScript').item.json.telegram_chat_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "id": "e959d438-1ff6-4cf7-a17f-7819cacbecf6",
+      "name": "Notificar por Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2784,
+        1136
+      ],
+      "webhookId": "70d6a52f-cdca-4e29-9ddb-c94500694dcd",
+      "credentials": {
+        "telegramApi": {
+          "id": "1FwgncoQuq1GPBt2",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Cron 19hs - Enviar Fixture": {
+      "main": [
+        [
+          {
+            "node": "Buscar Partidos Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Partidos Mañana": {
+      "main": [
+        [
+          {
+            "node": "Parsear Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Mañana": {
+      "main": [
+        [
+          {
+            "node": "Upsert Fixture Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Fixture Mañana": {
+      "main": [
+        [
+          {
+            "node": "Obtener Jugadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Jugadores": {
+      "main": [
+        [
+          {
+            "node": "Notificar por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron 23hs - Calcular Puntos": {
+      "main": [
+        [
+          {
+            "node": "Buscar Resultados Ayer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Resultados": {
+      "main": [
+        [
+          {
+            "node": "Upsert Fixture Ayer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Predicciones": {
+      "main": [
+        [
+          {
+            "node": "Calcular Puntajes1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Historial Diario": {
+      "main": [
+        [
+          {
+            "node": "Traer Puntajes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Puntajes1": {
+      "main": [
+        [
+          {
+            "node": "Guardar Historial Diario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Resultados Ayer": {
+      "main": [
+        [
+          {
+            "node": "Parsear Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Partidos Activos": {
+      "main": [
+        [
+          {
+            "node": "HTML Builder & Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Builder & Parser": {
+      "main": [
+        [
+          {
+            "node": "Mostrar Formulario HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Buscar Jugador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Jugador": {
+      "main": [
+        [
+          {
+            "node": "Buscar Partidos Activos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Recibir POST": {
+      "main": [
+        [
+          {
+            "node": "Parsear Formulario POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Formulario POST": {
+      "main": [
+        [
+          {
+            "node": "Upsert Predicciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Predicciones": {
+      "main": [
+        [
+          {
+            "node": "Mostrar Pantalla Éxito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Fixture Ayer": {
+      "main": [
+        [
+          {
+            "node": "Obtener Predicciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer Puntajes": {
+      "main": [
+        [
+          {
+            "node": "Traer Jugadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer Jugadores": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Notificar por Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen 3 Coder": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Flash 3.1 Lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8d09bbe9f4d9927fc4c8a17afea05396ceeae3fa505bb8a1751699adf525b5"
+  }
+}
