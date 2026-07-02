@@ -1,0 +1,14 @@
+workflow.json
+  h_ae4ce9e3bbc9c5 306-307,330,335,364,459,476,511,678,697,725,759,784,798,818,841,870,1158-1200,1266-1268,1323,1483-1488,1491-1501
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7e353d0ae95836ef09edbf3bfd5cdbd3989603ec",
+  "prompts": {},
+  "humans": {
+    "h_ae4ce9e3bbc9c5": {
+      "author": "Mariano Gobea Alcoba <mariano.gobea@mercadolibre.com>"
+    }
+  }
+}
