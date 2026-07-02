@@ -1,0 +1,23 @@
+.gitignore
+  s_5c3a73204a080b::t_8ce3b49e8b225f 1
+README.md
+  s_5c3a73204a080b::t_885eca2c3ce188 9-11,18,21-22,26-29,41,43
+docu_tecnica.md
+  s_5c3a73204a080b::t_03ee0b82bfe73d 34-37,41,43-45,47-48,51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bd42e36b21ac8f4c664ea51521c09fa76adf04d1",
+  "prompts": {},
+  "sessions": {
+    "s_5c3a73204a080b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f2362-8466-7601-b754-3b06da86c147",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mariano Gobea Alcoba <mariano.gobea@mercadolibre.com>"
+    }
+  }
+}
