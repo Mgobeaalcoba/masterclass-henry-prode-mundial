@@ -303,7 +303,8 @@
           "id": "1FwgncoQuq1GPBt2",
           "name": "Telegram account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -326,12 +327,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const allItems = $input.all();\nif (!allItems[0].json.response) return [];\nconst fixtures = allItems[0].json.response;\n\n// Filtramos por la liga correcta (World Cup = id 1)\nconst worldCupFixtures = fixtures.filter(match => match.league.id === 1);\n\nreturn worldCupFixtures.map(match => {\n  const homeTeam = match.teams.home.name;\n  const awayTeam = match.teams.away.name;\n  \n  // Generamos el partido_id dinámico idéntico al del fixture de las 19 hs\n  const partidoId = `${homeTeam.toLowerCase().replace(/\\s+/g, '-')}-${awayTeam.toLowerCase().replace(/\\s+/g, '-')}`;\n\n  // Calculamos el ganador real de forma idéntica\n  const ganadorReal = match.teams.home.winner ? homeTeam : (match.teams.away.winner ? awayTeam : 'Ninguno (Empate)');\n\n  // Extraemos solo la fecha YYYY-MM-DD de la cadena completa ISO\n  const fixtureDate = match.fixture.date ? match.fixture.date.split('T')[0] : null;\n\n  return {\n    json: {\n      partido_id: partidoId,\n      fixture_id: match.fixture.id,\n      fixture_date: fixtureDate,\n      equipo_1: homeTeam,\n      equipo_2: awayTeam,\n      goles_equipo_1: match.goals.home,\n      goles_equipo_2: match.goals.away,\n      ganador: ganadorReal,\n      timestamp: match.fixture.timestamp,\n      termino: ['FT', 'PEN'].includes(match.fixture.status.short)\n    }\n  };\n});"
+        "jsCode": "// Recibimos todos los objetos que vienen del Merge (Ayer y Hoy)\nconst allItems = $input.all();\nconst resultadosFinales = [];\n\n// Iteramos sobre cada ítem (cada uno representa una respuesta de la API de un día diferente)\nallItems.forEach(item => {\n  // Verificamos si el ítem tiene la estructura de respuesta esperada\n  if (item.json.response && Array.isArray(item.json.response)) {\n    const fixtures = item.json.response;\n\n    // Filtramos solo la liga del Mundial (id 1)\n    const worldCupFixtures = fixtures.filter(match => match.league.id === 1);\n\n    // Mapeamos manteniendo exactamente todos tus campos originales\n    const procesados = worldCupFixtures.map(match => {\n      const homeTeam = match.teams.home.name;\n      const awayTeam = match.teams.away.name;\n      \n      const partidoId = `${homeTeam.toLowerCase().replace(/\\s+/g, '-')}-${awayTeam.toLowerCase().replace(/\\s+/g, '-')}`;\n      const ganadorReal = match.teams.home.winner ? homeTeam : (match.teams.away.winner ? awayTeam : 'Ninguno (Empate)');\n      const fixtureDate = match.fixture.date ? match.fixture.date.split('T')[0] : null;\n\n      return {\n        json: {\n          partido_id: partidoId,\n          fixture_id: match.fixture.id,\n          fixture_date: fixtureDate,\n          equipo_1: homeTeam,\n          equipo_2: awayTeam,\n          goles_equipo_1: match.goals.home,\n          goles_equipo_2: match.goals.away,\n          ganador: ganadorReal,\n          timestamp: match.fixture.timestamp,\n          termino: ['FT', 'PEN'].includes(match.fixture.status.short)\n        }\n      };\n    });\n\n    resultadosFinales.push(...procesados);\n  }\n});\n\nreturn resultadosFinales;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        640,
+        864,
         1344
       ],
       "id": "4e05df19-b0ef-4654-aa12-e26aa25a3220",
@@ -360,7 +361,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1088,
+        1312,
         1344
       ],
       "credentials": {
@@ -455,7 +456,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1536,
+        1760,
         1344
       ],
       "credentials": {
@@ -472,7 +473,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
+        1536,
         1344
       ],
       "id": "21bc75a0-fef0-4aa3-8b4d-5e8ea6c42aab",
@@ -507,7 +508,7 @@
       "typeVersion": 4.4,
       "position": [
         416,
-        1344
+        1248
       ]
     },
     {
@@ -674,7 +675,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        864,
+        1088,
         1344
       ],
       "id": "2bc4c0ab-5962-4188-8598-ae55698bc69c",
@@ -693,7 +694,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2208,
+        2432,
         1344
       ],
       "id": "a411a996-abac-440a-9875-a4fe20362114",
@@ -721,7 +722,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1760,
+        1984,
         1344
       ],
       "id": "b783b47a-0693-49f0-a636-66d0311ee0b1",
@@ -755,7 +756,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1984,
+        2208,
         1344
       ],
       "id": "de2f4bf5-90fa-4fcb-ad50-69848a521d1c",
@@ -780,7 +781,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2432,
+        2656,
         1344
       ],
       "id": "ebe02d6c-c612-4c1c-9d5c-7c57dc2d1aae",
@@ -794,7 +795,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        2576,
+        2800,
         1568
       ],
       "id": "a81bf2fd-232b-414b-bfbb-1ee989620b5e",
@@ -814,7 +815,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        2448,
+        2672,
         1568
       ],
       "id": "5511542c-f684-4877-82d6-1049b6333c5d",
@@ -837,7 +838,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2784,
+        3008,
         1344
       ],
       "webhookId": "70d6a52f-cdca-4e29-9ddb-c94500694dcd",
@@ -866,7 +867,7 @@
           "cachedResultName": "info_api_table",
           "cachedResultUrl": "https://airtable.com/applwihYRgheLWWwY/tblQPEtYs5XGdEIpA"
         },
-        "filterByFormula": "=AND(IS_SAME({fixture_date}, '{{ $now.plus({ days: 1 }).toFormat(\"yyyy-MM-dd\") }}', 'day'), {termino} = 0)",
+        "filterByFormula": "=AND(\n  OR(\n    IS_SAME({fixture_date}, '{{ $now.toFormat(\"yyyy-MM-dd\") }}', 'day'),\n    IS_SAME({fixture_date}, '{{ $now.plus({ days: 1 }).toFormat(\"yyyy-MM-dd\") }}', 'day')\n  ),\n  {termino} = 0\n)",
         "options": {}
       },
       "id": "13d558a1-9661-42a0-8200-aceff0ff03fc",
@@ -1154,6 +1155,49 @@
           "name": "Airtable Personal Access Token account"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        1344
+      ],
+      "id": "36370727-347b-4329-ab7f-c85ed0383232",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "https://v3.football.api-sports.io/fixtures",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $now.toFormat(\"yyyy-MM-dd\") }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apisports-key",
+              "value": "={{ $vars.X_APISPORTS_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "84dda9e6-da2f-4f93-9c81-61be6e7bc447",
+      "name": "Buscar Resultados Hoy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        1440
+      ]
     }
   ],
   "connections": {
@@ -1219,6 +1263,11 @@
             "node": "Buscar Resultados Ayer",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Buscar Resultados Hoy",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1271,7 +1320,7 @@
       "main": [
         [
           {
-            "node": "Parsear Resultados",
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -1428,6 +1477,28 @@
             "node": "Mostrar Pantalla Éxito",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Parsear Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Resultados Hoy": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
