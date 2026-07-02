@@ -15,8 +15,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        192,
-        1008
+        -336,
+        944
       ]
     },
     {
@@ -47,8 +47,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        416,
-        1008
+        -112,
+        944
       ]
     },
     {
@@ -58,8 +58,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        640,
-        1008
+        112,
+        944
       ],
       "id": "7274c9ca-e682-4e9c-9c90-b08af549ef86",
       "name": "Parsear Mañana"
@@ -228,8 +228,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        864,
-        1008
+        336,
+        944
       ],
       "id": "daa446d2-1d6a-406b-bcae-5c96f51e552f",
       "name": "Upsert Fixture Mañana",
@@ -272,8 +272,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1088,
-        1008
+        560,
+        944
       ],
       "executeOnce": true,
       "credentials": {
@@ -294,8 +294,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1312,
-        1008
+        784,
+        944
       ],
       "webhookId": "70d6a52f-cdca-4e29-9ddb-c94500694dcd",
       "credentials": {
@@ -321,8 +321,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        192,
-        1344
+        -336,
+        1280
       ]
     },
     {
@@ -332,8 +332,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        1344
+        336,
+        1280
       ],
       "id": "4e05df19-b0ef-4654-aa12-e26aa25a3220",
       "name": "Parsear Resultados"
@@ -361,8 +361,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1312,
-        1344
+        784,
+        1280
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -456,8 +456,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1760,
-        1344
+        1232,
+        1280
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -473,8 +473,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1536,
-        1344
+        1008,
+        1280
       ],
       "id": "21bc75a0-fef0-4aa3-8b4d-5e8ea6c42aab",
       "name": "Calcular Puntajes1"
@@ -507,8 +507,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        416,
-        1248
+        -112,
+        1184
       ]
     },
     {
@@ -675,8 +675,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1088,
-        1344
+        560,
+        1280
       ],
       "id": "2bc4c0ab-5962-4188-8598-ae55698bc69c",
       "name": "Upsert Fixture Ayer",
@@ -694,8 +694,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2432,
-        1344
+        1904,
+        1280
       ],
       "id": "a411a996-abac-440a-9875-a4fe20362114",
       "name": "Code in JavaScript"
@@ -722,8 +722,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        1984,
-        1344
+        1456,
+        1280
       ],
       "id": "b783b47a-0693-49f0-a636-66d0311ee0b1",
       "name": "Traer Puntajes",
@@ -756,8 +756,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        2208,
-        1344
+        1680,
+        1280
       ],
       "id": "de2f4bf5-90fa-4fcb-ad50-69848a521d1c",
       "name": "Traer Jugadores",
@@ -781,31 +781,11 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2656,
-        1344
+        2128,
+        1280
       ],
       "id": "ebe02d6c-c612-4c1c-9d5c-7c57dc2d1aae",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": "qwen/qwen3-coder:free",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2800,
-        1568
-      ],
-      "id": "a81bf2fd-232b-414b-bfbb-1ee989620b5e",
-      "name": "Qwen 3 Coder",
-      "credentials": {
-        "openRouterApi": {
-          "id": "xZpAyjDIWgQms8rD",
-          "name": "OpenRouter account"
-        }
-      }
     },
     {
       "parameters": {
@@ -815,8 +795,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        2672,
-        1568
+        2272,
+        1504
       ],
       "id": "5511542c-f684-4877-82d6-1049b6333c5d",
       "name": "Flash 3.1 Lite",
@@ -838,8 +818,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        3008,
-        1344
+        2480,
+        1280
       ],
       "webhookId": "70d6a52f-cdca-4e29-9ddb-c94500694dcd",
       "credentials": {
@@ -875,8 +855,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        640,
-        560
+        112,
+        496
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -894,8 +874,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        560
+        336,
+        496
       ]
     },
     {
@@ -919,8 +899,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        1088,
-        560
+        560,
+        496
       ]
     },
     {
@@ -932,8 +912,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        192,
-        560
+        -336,
+        496
       ],
       "id": "7fc832ff-e603-4c06-8974-893686ba7110",
       "name": "Webhook",
@@ -962,8 +942,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        416,
-        560
+        -112,
+        496
       ],
       "id": "15fcfeef-6f32-46fc-bf83-b7e262a3f172",
       "name": "Buscar Jugador",
@@ -984,8 +964,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        192,
-        784
+        -336,
+        720
       ],
       "id": "03f5a5ff-062a-44cf-8a0a-dd113d7fa2cc",
       "name": "Webhook - Recibir POST",
@@ -998,8 +978,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        416,
-        784
+        -112,
+        720
       ],
       "id": "8686b3c5-9abb-49b0-845a-d5f21e7a0825",
       "name": "Parsear Formulario POST"
@@ -1023,8 +1003,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        864,
-        784
+        336,
+        720
       ],
       "id": "31977cda-2ad6-4d59-b853-a7cd83709471",
       "name": "Mostrar Pantalla Éxito"
@@ -1144,8 +1124,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        640,
-        784
+        112,
+        720
       ],
       "id": "1227cf85-0f11-481c-826d-c8d44f600714",
       "name": "Upsert Predicciones",
@@ -1161,8 +1141,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        640,
-        1344
+        112,
+        1280
       ],
       "id": "36370727-347b-4329-ab7f-c85ed0383232",
       "name": "Merge"
@@ -1195,9 +1175,35 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        416,
-        1440
+        -112,
+        1376
       ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-20b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-20b"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        1504
+      ],
+      "id": "e163c0d0-4877-4da8-887e-a7e3a80b45b5",
+      "name": "gpt-oss-20b",
+      "credentials": {
+        "openAiApi": {
+          "id": "nJRyuZAr2u5uRneP",
+          "name": "OpenAI - NVIDIA"
+        }
+      }
     }
   ],
   "connections": {
@@ -1382,24 +1388,13 @@
         ]
       ]
     },
-    "Qwen 3 Coder": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "Flash 3.1 Lite": {
       "ai_languageModel": [
         [
           {
             "node": "AI Agent",
             "type": "ai_languageModel",
-            "index": 0
+            "index": 1
           }
         ]
       ]
@@ -1502,9 +1497,36 @@
           }
         ]
       ]
+    },
+    "gpt-oss-20b": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "pinData": {},
+  "pinData": {
+    "Cron 23hs - Calcular Puntos": [
+      {
+        "timestamp": "2026-07-02T11:49:00.319-03:00",
+        "Readable date": "July 2nd 2026, 11:49:00 am",
+        "Readable time": "11:49:00 am",
+        "Day of week": "Thursday",
+        "Year": "2026",
+        "Month": "July",
+        "Day of month": "02",
+        "Hour": "11",
+        "Minute": "49",
+        "Second": "00",
+        "Timezone": "America/Argentina/Buenos_Aires (UTC-03:00)"
+      }
+    ]
+  },
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "db8d09bbe9f4d9927fc4c8a17afea05396ceeae3fa505bb8a1751699adf525b5"
