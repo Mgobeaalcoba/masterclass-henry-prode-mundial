@@ -31,20 +31,24 @@ El sistema "Prode Mundial" es una plataforma de automatización de extremo a ext
 
 Este es el motor de lógica de negocio principal.
 
-1. **Ingesta de Resultados:** Se obtienen los resultados reales del día mediante Buscar Resultados Ayer.  
-2. **Cálculo Lógico:** El nodo Calcular Puntajes1 realiza el cruce entre las predicciones almacenadas y los resultados reales.
+1. **Ingesta de Resultados:** Primero se consultan dos ventanas de resultados en API-Sports: **Buscar Resultados Ayer** (`date = yesterday`) y **Buscar Resultados Hoy** (`date = today`). Esto cubre partidos que pudieron finalizar en cualquiera de los dos días operativos.  
+2. **Unificación y Normalización:** El nodo **Merge** combina ambas respuestas y **Parsear Resultados** filtra los partidos del Mundial, normaliza el JSON y estandariza campos como fixture\_id, equipos, goles, ganador y estado terminado.  
+3. **Persistencia de Resultados:** El nodo **Upsert Fixture Ayer** actualiza la tabla de fixtures en Airtable usando fixture\_id como clave de deduplicación. Aunque el nombre operativo del nodo menciona "Ayer", en esta etapa persiste resultados provenientes tanto de ayer como de hoy.  
+4. **Cálculo Lógico:** El nodo **Calcular Puntajes1** realiza el cruce entre las predicciones almacenadas y los resultados reales ya persistidos.
 
 #### **Lógica de Puntuación**
 
-Definamos la puntuación
+Para cada partido, el sistema compara el ganador predicho contra el ganador real y, si coincide, valida si también acertó el marcador exacto:
 
-![][image1]para un partido dado, donde ![][image2] son los goles de la predicción y ![][image3] son los goles reales, y ![][image4] son los ganadores (o empate) predichos y reales:
+* **3 puntos:** acierta ganador o empate y también los goles exactos de ambos equipos.  
+* **1 punto:** acierta solo el ganador o empate.  
+* **0 puntos:** cualquier otro caso.
 
-3. ![][image5]**Persistencia:** El nodo Guardar Historial Diario realiza un upsert en la tabla puntaje\_jugadores.  
-4. **IA Generativa:** Se utiliza un **AI Agent (LangChain)**.  
+5. **Persistencia:** El nodo Guardar Historial Diario realiza un upsert en la tabla puntaje\_jugadores.  
+6. **IA Generativa:** Se utiliza un **AI Agent (LangChain)**.  
    * **System Prompt:** Define la personalidad ("presentador futbolero") y las reglas de modismos locales (Argentina, Colombia, Neutro).  
    * **User Prompt:** Recibe el contexto consolidado (nombre, país, puntos hoy, puntos totales, puesto en ranking).  
-5. **Distribución:** El nodo Notificar por Telegram1 entrega el mensaje redactado por IA al telegram\_chat\_id correspondiente.
+7. **Distribución:** El nodo Notificar por Telegram1 entrega el mensaje redactado por IA al telegram\_chat\_id correspondiente.
 
 ## **4\. Problemas Resueltos**
 
