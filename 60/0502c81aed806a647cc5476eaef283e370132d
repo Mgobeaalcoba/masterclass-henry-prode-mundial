@@ -1,0 +1,14 @@
+README.md
+  h_ae4ce9e3bbc9c5 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "600502c81aed806a647cc5476eaef283e370132d",
+  "prompts": {},
+  "humans": {
+    "h_ae4ce9e3bbc9c5": {
+      "author": "Mariano Gobea Alcoba <mariano.gobea@mercadolibre.com>"
+    }
+  }
+}
