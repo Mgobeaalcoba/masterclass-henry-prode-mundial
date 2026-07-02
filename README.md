@@ -39,4 +39,4 @@ Este repositorio sirve como material de apoyo para la **Masterclass de Marketing
 
 Este proyecto es parte del ecosistema de formación de **Henry**. Si eres estudiante y deseas replicar este sistema, asegúrate de importar el .json en una instancia de n8n con acceso a las credenciales de la API-Sports y Airtable.
 
-*Desarrollado por: Mariano Gobea Alcoba
+**Desarrollado por: Mariano Gobea Alcoba**
